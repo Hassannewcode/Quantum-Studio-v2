@@ -1,0 +1,102 @@
+{
+  "version": 2,
+  "name": "universal-vercel-project",
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/node",
+      "config": {
+        "includeFiles": ["dist/**", "public/**", "src/**"]
+      }
+    },
+    {
+      "src": "public/**",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/api/$1"
+    },
+    {
+      "src": "/_next/static/(.*)",
+      "dest": "/_next/static/$1"
+    },
+    {
+      "src": "/static/(.*)",
+      "dest": "/static/$1"
+    },
+    {
+      "src": "/(.*\\.(?:html|css|js|png|jpg|gif|svg|ico|json))",
+      "dest": "/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Strict-Transport-Security",
+          "value": "max-age=31536000; includeSubDomains; preload"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/static/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/old-documentation",
+      "destination": "/docs/new-documentation",
+      "permanent": true
+    },
+    {
+      "source": "/legacy-url/(.*)",
+      "destination": "/new-url/$1",
+      "statusCode": 307
+    }
+  ],
+  "env": {
+    "NODE_ENV": "production",
+    "API_BASE_URL": "https://your-api-domain.com/api",
+    "ANALYTICS_KEY": "@analytics_key_secret"
+  },
+  "crons": [
+    {
+      "path": "/api/cron/daily-job",
+      "schedule": "0 0 * * *"
+    },
+    {
+      "path": "/api/cron/hourly-update",
+      "schedule": "0 * * * *"
+    }
+  ]
+}
